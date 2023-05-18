@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateView
+from rest_framework.generics import ListCreateView, RetrieveUpdateDestroyAPIView
 from .models import Booking, Menu
 from .serializers import bookingSerializer, menuSerializer
 
@@ -24,3 +24,9 @@ class menuview(APIView):
         items = Menu.objects.all()
         serializer = menuSerializer(items, many=True)
         return Response(serializer.data)    
+
+class MenuItemView(generics.ListCreateView):
+    pass
+
+class SinlgeItemView(generics.RetrieveUpdateDestroyAPIView):
+    pass
