@@ -3,7 +3,9 @@ from django.http import HttpResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateView, RetrieveUpdateDestroyAPIView
+from rest_framework import permissions
+from rest_framework import generics
+from rest_framework import viewsets
 from .models import Booking, Menu
 from .serializers import bookingSerializer, menuSerializer
 
@@ -25,8 +27,16 @@ class menuview(APIView):
         serializer = menuSerializer(items, many=True)
         return Response(serializer.data)    
 
-class MenuItemView(generics.ListCreateView):
-    pass
+class MenuItemView(generics.ListCreateAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = menuSerializer
 
-class SinlgeItemView(generics.RetrieveUpdateDestroyAPIView):
-    pass
+class SingleItemView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = menuSerializer
+    
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all()
+    serializer_class = bookingSerializer 
+    permission_classes = [permissions.IsAuthenticated]   
+    
