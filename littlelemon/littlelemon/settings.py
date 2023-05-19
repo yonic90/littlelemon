@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "restaurant",
     "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,15 @@ STATIC_URL = "static/restaurant/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORk ={
+    'DEFAULT_RENDERER_CLASES':[
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableRenderer',
+        'rest_framework_xml.renderers.XMLRenderer',
+    ],
+    
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework.authentification.TokenAuthentification',
+    )
+}
