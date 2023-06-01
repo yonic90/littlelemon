@@ -60,6 +60,6 @@ In order to use the API, users need to be authenticated. JWT tokens can be gener
 POST http://127.0.0.1:8000/auth/token/login/
   
 Home endpoints
-http://127.0.0.1:8000/restaurant/home/
+http://127.0.0.1:8000/api/home/
 
 Serve static HTML content - homepage template.
