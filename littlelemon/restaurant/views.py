@@ -1,53 +1,43 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import permissions
+from django.contrib.auth.models import User
 from rest_framework import generics
-from rest_framework import viewsets
-from .models import Booking, Menu, MenuItem
-from .serializers import bookingSerializer, menuSerializer, MenuItemSerializer
+from rest_framework import viewsets, views
+from .models import Booking, Menu
+from .serializers import BookingSerializer, MenuSerializer, UserSerializer
+from .permissions import IsAdmin, IsManager, IsCustomer, ReadOnly
 
 # Create your views here.
 def index(request):
     return render(request, 'index.html', {})
 
-class bookingview(APIView):
-    
-    def get(self, request):
-        items = Booking.objects.all()
-        serializer = bookingSerializer(items, many=True)
-        return Response(serializer.data)
-
-class menuview(APIView):
-    
-    def get(self, request):
-        items = Menu.objects.all()
-        serializer = menuSerializer(items, many=True)
-        return Response(serializer.data)    
-
-class MenuItemView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+class MenuViewSet(viewsets.ModelViewSet):
     queryset = Menu.objects.all()
-    serializer_class = menuSerializer
-
-class SingleItemView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Menu.objects.all()
-    serializer_class = menuSerializer
+    serializer_class = MenuSerializer
     
+    def get_permissions(self):
+        if self.request.method == "GET":
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin|IsManager]
+        return [permission() for permission in permission_classes]  
+
 class BookingViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Booking.objects.all()
-    serializer_class = bookingSerializer 
-    permission_classes = [IsAuthenticated]  
+    serializer_class = BookingSerializer
+    
+    def get_permissions(self):
+        if self.request.method in ["GET", "POST"]:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin|IsManager]
+        return [permission() in permission in permission_classes]  
+    
+class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdmin]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer                    
 
-class SingleMenuItemView(generics.RetrieveUpdateDestroyAPIView):     
-    queryset = MenuItem.objects.all()
-    serializer_class = MenuItemSerializer
-
-@api_view()
-@permission_classes([IsAuthenticated])
-# @authentication_classes([TokenAuthentication])
-def msg(request):
-    return Response({"message":"This view is protected"})
