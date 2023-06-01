@@ -1,16 +1,17 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
-# from . import views
-#from .views import menuview, bookingview
-from .views import MenuItemsView, SingleMenuItemView
+from . import views
+
+router = DefaultRouter(trailing_slash=False)
+router.register("users", views.UserViewSet, basename="user")
+router.register("menu-items", views.MenuViewSet, basename="menu-items")
+router.register("bookings", views.BookingViewSet, basename="bookings")
 
 urlpatterns = [
-    # path('', views.index, name='index'),
-    # path('menu/', menuview.as_view()),
-    # path('booking/', bookingview.as_view()),
-    path('menu/', views.MenuItemsView.as_view()),
-    path('menu/<int:pk>', views.SingleItemView.as_view()),
-    path('api-token-auth/', obtain_auth_token),
-    
+    path("", include(router.urls)),
+    path("home/", views.index, name="index"),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api-token-auth/", obtain_auth_token),
 ]

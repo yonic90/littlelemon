@@ -9,13 +9,13 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-import os
+
 from pathlib import Path
+import pymysql
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
-os.makedirs(TEMPLATE_DIR, exist_ok=True)
+
 
 
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "restaurant",
     "rest_framework",
     "rest_framework.authtoken",
+    "djoser",
 ]
 
 MIDDLEWARE = [
@@ -87,12 +88,17 @@ DATABASES = {
         "PORT":"3306",
         "USER":"admindjango",
         "PASSWORD":"employee@123!",
+        "OPTIONS":{
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
+pymysql.version_info = (1, 4, 2, "final", 0)
+pymysql.install_as_MySQLdb()
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -125,7 +131,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/restaurant/"
+STATIC_URL = "restaurant/static/"
+
+STATICFILES_DIRS = [
+    "restaurant/static/"
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -133,13 +143,41 @@ STATIC_URL = "static/restaurant/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORk ={
-    'DEFAULT_RENDERER_CLASES':[
+    'DEFAULT_RENDERER_CLASSES':[
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableRenderer',
         'rest_framework_xml.renderers.XMLRenderer',
     ],
     
+      "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.OrderingFilter",
+        "rest_framework.filters.SearchFilter",
+    ],
+      
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    
     'DEFAULT_AUTHENTICATION_CLASSES':(
-        'rest_framework.authentification.TokenAuthentification',
-    )
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    
+    'DEFAULT_PERMISSION_CLASSES':[
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.DjangoModelPermissions",
+    ],
+    
+     "DEFAULT_THROTTLE_RATES": {
+        "anon": "2/minute",
+        "user": "200/minute",
+    },
 }
+
+
+DJOSER={"USER_ID_FIELD":"username"}
