@@ -34,7 +34,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [IsAdmin, IsManager]
-        return [permission() in permission in permission_classes]  
+        return [permission() for permission in permission_classes]  
     
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdmin]
