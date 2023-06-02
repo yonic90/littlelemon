@@ -21,7 +21,7 @@ class MenuViewSet(viewsets.ModelViewSet):
         if self.request.method == "GET":
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdmin|IsManager]
+            permission_classes = [IsAdmin, IsManager]
         return [permission() for permission in permission_classes]  
 
 class BookingViewSet(viewsets.ModelViewSet):
@@ -33,8 +33,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         if self.request.method in ["GET", "POST"]:
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdmin|IsManager]
-        return [permission() in permission in permission_classes]  
+            permission_classes = [IsAdmin, IsManager]
+        return [permission() for permission in permission_classes]  
     
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdmin]
